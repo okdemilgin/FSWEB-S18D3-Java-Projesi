@@ -1,0 +1,150 @@
+2) Fıkra ve hikaye türündeki kitapların adını ve türünü listeleyin.
+
+select kitapadi, turadi from kitap
+where turadi in ('Fıkra', 'Hikaye');
+
+3) 10B veya 10C sınıfındaki öğrencilerin numarasını, adını, soyadını ve okuduğu kitapları listeleyin.
+
+#join ile yazın
+
+4) Öğrencinin adını, soyadını ve kitap aldığı tarihleri listeleyin.
+
+select o.ograd, o.ogrsoyad, islem.atarih from ogrenci
+inner join islem as i on o.ogrno = i.ogrno;
+
+5) Fıkra ve hikaye türündeki kitapların adını ve türünü listeleyin.
+
+select k.kitapadi, t.turadi from kitap as k inner join tur as t on k.turno=t.turno
+where t.turadi='Fıkra' or t.turadi='Hikaye' // where t.turadi in('Fıkra', 'Hikaye') order by k.kitapadi;
+
+6) 10B veya 10C sınıfındaki öğrencilerin numarasını, adını, soyadını ve okuduğu kitapları, öğrenci adına göre listeleyin.
+
+select o.ogrno, o.ograd, o.ogrsoyad, k.kitapadi from ogrenci as o inner join islem as i on o.ogrno=i.ogrno
+inner join kitap as k on k.kitapno=i.kitapno
+where o.sinif in ('10B', '10C') order by o.ograd;
+
+7) Kitap alan öğrencinin adı, soyadı, kitap aldığı tarih listelensin. Kitap almayan öğrencilerinde listede görünsün.
+
+select o.ograd, o.ogrsoyad, i.atarih from ogrenci as o left join islem as i on o.ogrno=i.ogrno;
+
+8) Kitap almayan öğrencileri listeleyin.
+
+select o.ograd, o.ogrsoyad, i.atarih from ogrenci as o left join islem as i on o.ogrno=i.ogrno
+where i.atarih is null;
+
+9) Alınan kitapların kitap numarasını, adını ve kaç defa alındığını kitap numaralarına göre artan sırada listeleyiniz.
+
+select k.kitapno, k.kitapadi, count(i.kitapno) from kitap as k
+inner join islem as i on k.kitapno=i.kitapno
+group by k.kitapno, k.kitapadi
+order by k.kitapno asc;
+
+10) Alınan kitapların kitap numarasını, adını kaç defa alındığını (alınmayan kitapların yanında 0 olsun) listeleyin.
+
+select k.kitapno, k.kitapadi, count(k.kitapno) as adet from kitap as k
+left join islem as i on k.kitapno=i.kitapno
+group by k.kitapno, k.kitapadi;
+
+11) Öğrencilerin adı soyadı ve aldıkları kitabın adı listelensin.
+
+select o.ograd, o.ogrsoyad, k.kitapadi from ogrenci as o
+inner join islem as i on o.ogrno=i.ogrno
+inner join kitap as k on i.kitapno=k.kitapno
+order by o.ograd, o.ogrsoyad asc;
+
+12) Her öğrencinin adı, soyadı, kitabın adı, yazarın adı soyad ve kitabın türünü ve kitabın alındığı tarihi listeleyiniz. Kitap almayan öğrenciler de listede görünsün.
+
+select o.ograd, o.ogrsoyad, k.kitapadi, y.yazarad, y.yazarsoyad, i.atarih, t.turadi from ogrenci as o
+left join islem as i on o.ogrno=i.ogrno
+left join kitap as k on i.kitapno=k.kitapno
+left join yazar as y on k.yazarno=y.yazarno
+left join tur as t on k.turno=t.turno
+order by o.ograd, o.ogrsoyad;
+
+13) 10A veya 10B sınıfındaki öğrencilerin adı soyadı ve okuduğu kitap sayısını getirin.
+
+select o.ograd, o.ogrsoyad, count(i.ogrno) from ogrenci as o
+inner join islem as i on o.ogrno=i.ogrno
+where o.sinif in ('10A','10B')
+group by o.ogrno;
+
+14) Tüm kitapların ortalama sayfa sayısını bulunuz.
+#AVG
+
+select avg(sayfa_sayisi) as ortalama_sayfa_sayisi from kitap;
+
+15) Sayfa sayısı ortalama sayfanın üzerindeki kitapları listeleyin.
+
+select k.kitapadi, k.sayfasayisi from kitap where k.sayfasayisi> (select avg(sayfasayisi) from kitap);
+
+16) Öğrenci tablosundaki öğrenci sayısını gösterin
+
+select count(o.ogrno) from ogrenci as o;  //select count(*) from ogrenci as o;
+
+17) Öğrenci tablosundaki toplam öğrenci sayısını toplam sayı takma(alias kullanımı) adı ile listeleyin.
+
+select count(o.ogrno) as 'toplam sayı' from ogrenci as o;
+
+18) Öğrenci tablosunda kaç farklı isimde öğrenci olduğunu listeleyiniz.
+
+select count(distinct o.ograd) as farkli_isim from kitap;
+
+19) En fazla sayfa sayısı olan kitabın sayfa sayısını listeleyiniz.
+
+select max(k.sayfasayisi) as en_fazla_sayfa_sayisi from kitap;
+
+20) En fazla sayfası olan kitabın adını ve sayfa sayısını listeleyiniz.
+
+select k.sayfasayisi, k.kitapadi from kitap as k
+order by k.sayfasayisi desc limit 1;
+
+
+21) En az sayfa sayısı olan kitabın sayfa sayısını listeleyiniz.
+
+select min(k.sayfasayisi) as en_az_sayfa_sayisi from kitap;
+
+22) En az sayfası olan kitabın adını ve sayfa sayısını listeleyiniz.
+
+select kitapadi, sayfasayisi from kitap where sayfasayisi=(select min(sayfasayisi) from kitap)
+
+23) Dram türündeki en fazla sayfası olan kitabın sayfa sayısını bulunuz.
+
+select max(k.sayfasayisi) as en_fazla_sayfa_sayisi from kitap
+where tur= 'Dram';
+
+24) numarası 15 olan öğrencinin okuduğu toplam sayfa sayısını bulunuz.
+
+select sum(k.sayfasayisi) from islem as i
+left join kitap as k on i.kitapno=k.kitapno
+where i.ogrno=15;
+
+25) İsme göre öğrenci sayılarının adedini bulunuz.(Örn: ali 5 tane, ahmet 8 tane )
+
+select o.ograd, count(*) as adet from ogrenci as o group by o.ograd
+order by adet desc;
+
+26) Her sınıftaki öğrenci sayısını bulunuz.
+
+select sinif, count(*) as ogrenci_sayisi from ogrenciler
+group by sinif;
+
+27) Her sınıftaki erkek ve kız öğrenci sayısını bulunuz.
+
+select sinif, cinsiyet, count(*) as 'ogrenci sayisi' from ogrenci
+where cinsiyet is not null devamı gelcek!!!
+
+28) Her öğrencinin adını, soyadını ve okuduğu toplam sayfa sayısını büyükten küçüğe doğru listeleyiniz.
+
+select o.ogra, o.ogrsoyad, sum(k.sayfasayisi) as total from ogrenci as o
+inner join islem as i on i.ogrno=o.ogrno
+inner join kitap as k on i.kitapno=k.kitapno
+group by o.ograd, o.ogrsoyad
+order by total desc;
+
+29) Her öğrencinin okuduğu kitap sayısını getiriniz. (BURA önemli where yerine having kullanımı)
+
+select o.ogrno, o.ograd, o.ogrsoyad, count(i.kitapno) as 'kitap sayisi' from islem as i
+inner join ogrenci as o on i.ogrno=o.ogrno
+group by o.ogrno, o.ograd, o.ogrsoyad
+having count(i.kitapno) >15
+order by kitap_sayisi desc;
